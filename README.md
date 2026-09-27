@@ -10,4 +10,4 @@ Each `week-NN-*` folder contains that week's code, notes, and exercises. Progres
 - more weeks added as I go
 
 ## Status
-Currently on: **Week 0 — Setup**
+Currently on: **Week 1 — Python Fundamentals I**

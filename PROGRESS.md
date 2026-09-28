@@ -44,4 +44,31 @@ One entry per week: what I covered, what I built, what confused me.
     convention throughout Python.
   - Tuples: immutable, can't reassign an item, but CAN reassign the whole
     variable to a new tuple.
-- Status: in progress, starting Chapter 5 (if statements) next.
+- Chapters 5-11 (if, dicts, input/while, functions, classes, files/exceptions/json,
+  testing), covered 2026-09-27/28. Changed approach here: theory-first, since I
+  already know C++. I skipped the book's basic exercises on purpose (5-1..5-11,
+  most of 6-x through 11-x), so those are NOT done. Done: 6_synthesis_repos.py
+  (dict aggregation, nested data, comprehensions). Scratch demos live in
+  week-01/scratch_theory_*.py.
+  - Ch5: `and`/`or` return an operand, not a bool; truthy/falsy values; chained
+    comparisons (`1 < x < 10`); `==` compares value, `is` compares identity.
+  - Ch6: dict = hash table (O(1) lookup, ~146x faster than list `in` at n=100k);
+    keys must be hashable; `.keys()/.items()` are live views; mutating a dict
+    while iterating raises RuntimeError; nested dict/list = JSON's data model.
+  - Ch7: `input()` always returns str; `%` follows floor division (sign of the
+    divisor), C++ truncates (sign of the dividend); no do-while.
+  - Ch8: no overloading (a second `def` rebinds the name); args are passed by
+    object reference; `*args`/`**kwargs`; default values are evaluated once at
+    `def` time, so never use a mutable default (use None).
+  - Ch9: `self` is an explicit parameter; no access control (`_x` convention,
+    `__x` name mangling only avoids subclass collisions); instances are dicts;
+    MRO via C3 linearization, `super()` = next class in the instance's MRO.
+    Diagram: https://claude.ai/artifact/8qxBPdrbFZqSQ71n1LKWuD
+  - Ch10: `with` = protocol-based cleanup (not RAII); gc.collect() only frees
+    unreachable objects; EAFP over LBYL; `else` keeps `try` narrow; JSON round
+    trips are lossy (tuple->list, int keys->str).
+  - Ch11: `__name__ == '__main__'` guard; unittest makes a fresh TestCase per
+    test; class-level `responses = []` is shared across instances (test caught it).
+- Open items: Phase 1 milestone (a documented Python project on GitHub) is not
+  done yet; book exercises for Ch5-11 skipped; try pytest.
+- Status: Chapters 1-11 covered; Part II projects not started.

@@ -1,0 +1,170 @@
+<!doctype html>
+<title>Diamond Inheritance MRO</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --panel: #ffffff;
+    --fg: #1d1b18;
+    --muted: #6b6459;
+    --border: #ddd6cc;
+    --accent: #2f6f4f;
+    --accent-soft: #e3efe8;
+    --warn: #a3452e;
+    --warn-soft: #f5e6e1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171613;
+      --panel: #201e1a;
+      --fg: #ece7de;
+      --muted: #a39a8c;
+      --border: #3c3730;
+      --accent: #6fbf95;
+      --accent-soft: #1f3329;
+      --warn: #e08a6f;
+      --warn-soft: #3a241e;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171613;
+    --panel: #201e1a;
+    --fg: #ece7de;
+    --muted: #a39a8c;
+    --border: #3c3730;
+    --accent: #6fbf95;
+    --accent-soft: #1f3329;
+    --warn: #e08a6f;
+    --warn-soft: #3a241e;
+    color-scheme: dark;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    margin: 0;
+    padding-inline: 16px;
+    padding-block: 32px;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+  h1 { font-size: 1.3rem; font-weight: 600; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 0.9rem; margin: 0 0 8px; }
+  figure { margin: 0; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px 16px 14px; }
+  figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+  figcaption code, .sub code { font-family: 'IBM Plex Mono', monospace; background: var(--accent-soft); color: var(--accent); padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+  svg { width: 100%; height: auto; display: block; }
+  text { font-family: 'IBM Plex Mono', monospace; }
+  .cls-label { font-size: 15px; font-weight: 600; }
+  .arrow-label { font-size: 11px; fill: var(--muted); font-family: 'IBM Plex Sans', sans-serif; }
+  .step-label { font-size: 10.5px; fill: var(--muted); font-family: 'IBM Plex Sans', sans-serif; }
+  .box { fill: var(--panel); stroke: var(--fg); stroke-width: 1.4; }
+  .box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.6; }
+  .box-warn { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 1.6; }
+  .edge { stroke: var(--fg); stroke-width: 1.4; fill: none; }
+  .edge-accent { stroke: var(--accent); stroke-width: 1.8; fill: none; }
+  .edge-warn { stroke: var(--warn); stroke-width: 1.8; fill: none; stroke-dasharray: 4 3; }
+</style>
+<div class="wrap">
+  <div>
+    <h1>Diamond Inheritance &amp; Method Resolution Order</h1>
+    <p class="sub"><code>class Duck(Swimmer, Walker)</code>, both parents inheriting from <code>Animal</code> - every <code>speak()</code> override calls <code>super().speak()</code></p>
+  </div>
+  <figure>
+    <svg viewBox="0 0 760 470" role="img" aria-label="Top: the declared diamond class hierarchy with Duck inheriting from Swimmer and Walker, both inheriting from Animal. Bottom: the actual linear call order produced by super(), running Duck, Swimmer, Walker, Animal in sequence, each printed exactly once.">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="color:var(--fg)"/>
+        </marker>
+        <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="color:var(--accent)"/>
+        </marker>
+      </defs>
+      <text x="20" y="24" class="step-label" style="font-size:12px; font-weight:600; fill:var(--fg)">Declared hierarchy</text>
+      <rect class="box" x="320" y="34" width="120" height="42" rx="8"/>
+      <text x="380" y="60" text-anchor="middle" class="cls-label">Animal</text>
+      <rect class="box" x="150" y="140" width="120" height="42" rx="8"/>
+      <text x="210" y="166" text-anchor="middle" class="cls-label">Swimmer</text>
+      <rect class="box" x="490" y="140" width="120" height="42" rx="8"/>
+      <text x="550" y="166" text-anchor="middle" class="cls-label">Walker</text>
+      <rect class="box-accent" x="320" y="246" width="120" height="42" rx="8"/>
+      <text x="380" y="272" text-anchor="middle" class="cls-label" style="fill:var(--accent)">Duck</text>
+      <path class="edge" marker-end="url(#arrow)" d="M225,140 L345,80"/>
+      <text x="255" y="118" class="arrow-label">extends</text>
+      <path class="edge" marker-end="url(#arrow)" d="M535,140 L415,80"/>
+      <text x="480" y="118" class="arrow-label">extends</text>
+      <path class="edge" marker-end="url(#arrow)" d="M340,246 L235,182"/>
+      <path class="edge" marker-end="url(#arrow)" d="M420,246 L525,182"/>
+      <text x="380" y="230" text-anchor="middle" class="arrow-label">extends both</text>
+      <line x1="20" y1="305" x2="740" y2="305" stroke="var(--border)" stroke-width="1"/>
+      <text x="20" y="330" class="step-label" style="font-size:12px; font-weight:600; fill:var(--fg)">Actual call order when d.speak() runs (the MRO)</text>
+      <g>
+        <rect class="box-accent" x="20" y="350" width="130" height="50" rx="8"/>
+        <text x="85" y="378" text-anchor="middle" class="cls-label" style="font-size:13px; fill:var(--accent)">Duck</text>
+        <path class="edge-accent" marker-end="url(#arrow-accent)" d="M150,375 L182,375"/>
+        <text x="166" y="366" text-anchor="middle" class="arrow-label" style="fill:var(--accent)">super()</text>
+        <rect class="box" x="184" y="350" width="130" height="50" rx="8"/>
+        <text x="249" y="378" text-anchor="middle" class="cls-label" style="font-size:13px">Swimmer</text>
+        <path class="edge-accent" marker-end="url(#arrow-accent)" d="M314,375 L346,375"/>
+        <text x="330" y="366" text-anchor="middle" class="arrow-label" style="fill:var(--accent)">super()</text>
+        <rect class="box" x="348" y="350" width="130" height="50" rx="8"/>
+        <text x="413" y="378" text-anchor="middle" class="cls-label" style="font-size:13px">Walker</text>
+        <path class="edge-accent" marker-end="url(#arrow-accent)" d="M478,375 L510,375"/>
+        <text x="494" y="366" text-anchor="middle" class="arrow-label" style="fill:var(--accent)">super()</text>
+        <rect class="box" x="512" y="350" width="130" height="50" rx="8"/>
+        <text x="577" y="378" text-anchor="middle" class="cls-label" style="font-size:13px">Animal</text>
+        <path class="edge" marker-end="url(#arrow)" d="M642,375 L674,375"/>
+        <rect class="box" x="676" y="350" width="64" height="50" rx="8" style="opacity:0.55"/>
+        <text x="708" y="378" text-anchor="middle" class="cls-label" style="font-size:12px; opacity:0.7">object</text>
+      </g>
+      <text x="85" y="422" text-anchor="middle" class="step-label">1. prints "Duck.speak"</text>
+      <text x="249" y="422" text-anchor="middle" class="step-label">2. prints "Swimmer.speak"</text>
+      <text x="413" y="422" text-anchor="middle" class="step-label">3. prints "Walker.speak"</text>
+      <text x="577" y="422" text-anchor="middle" class="step-label">4. prints "Animal.speak"</text>
+      <text x="380" y="452" text-anchor="middle" class="step-label" style="font-size:11px">Note: Swimmer's super() call does NOT jump to Animal (its own declared parent) -- it jumps to whatever is next in Duck's MRO, which is Walker.</text>
+    </svg>
+    <figcaption>The diamond is declared with <code>Duck</code> pointing at two parents that share a grandparent. Python flattens this into one line (the MRO) before any code runs, and <code>super()</code> always steps to the <em>next box in that line</em> - not to the class's own textual parent.</figcaption>
+  </figure>
+  <figure>
+    <svg viewBox="0 0 760 260" role="img" aria-label="Comparison: a naive left-to-right depth-first search visits Animal twice and never reaches Walker, marked broken. Python's actual C3 linearization visits Duck, Swimmer, Walker, Animal, object, each exactly once, marked correct.">
+      <text x="20" y="24" class="step-label" style="font-size:12px; font-weight:600; fill:var(--warn)">Naive left-to-right DFS (Python 2 classic classes) -- broken</text>
+      <g>
+        <rect class="box" x="20" y="40" width="110" height="46" rx="8"/>
+        <text x="75" y="68" text-anchor="middle" class="cls-label" style="font-size:12.5px">Duck</text>
+        <path class="edge-warn" d="M130,63 L160,63"/>
+        <rect class="box" x="162" y="40" width="110" height="46" rx="8"/>
+        <text x="217" y="68" text-anchor="middle" class="cls-label" style="font-size:12.5px">Swimmer</text>
+        <path class="edge-warn" d="M272,63 L302,63"/>
+        <rect class="box-warn" x="304" y="40" width="110" height="46" rx="8"/>
+        <text x="359" y="68" text-anchor="middle" class="cls-label" style="font-size:12.5px; fill:var(--warn)">Animal</text>
+        <path class="edge-warn" d="M414,63 L444,63"/>
+        <rect class="box" x="446" y="40" width="110" height="46" rx="8"/>
+        <text x="501" y="68" text-anchor="middle" class="cls-label" style="font-size:12.5px">Walker</text>
+        <path class="edge-warn" d="M556,63 L586,63"/>
+        <rect class="box-warn" x="588" y="40" width="110" height="46" rx="8"/>
+        <text x="643" y="68" text-anchor="middle" class="cls-label" style="font-size:12.5px; fill:var(--warn)">Animal</text>
+      </g>
+      <text x="380" y="108" text-anchor="middle" class="step-label" style="fill:var(--warn)">Animal is visited twice, and since the first visit doesn't call onward, Walker never actually runs</text>
+      <line x1="20" y1="135" x2="740" y2="135" stroke="var(--border)" stroke-width="1"/>
+      <text x="20" y="160" class="step-label" style="font-size:12px; font-weight:600; fill:var(--accent)">C3 linearization (Python 3, what actually runs) -- correct</text>
+      <g>
+        <rect class="box-accent" x="20" y="176" width="110" height="46" rx="8"/>
+        <text x="75" y="204" text-anchor="middle" class="cls-label" style="font-size:12.5px; fill:var(--accent)">Duck</text>
+        <path class="edge-accent" marker-end="url(#arrow-accent)" d="M130,199 L160,199"/>
+        <rect class="box-accent" x="162" y="176" width="110" height="46" rx="8"/>
+        <text x="217" y="204" text-anchor="middle" class="cls-label" style="font-size:12.5px; fill:var(--accent)">Swimmer</text>
+        <path class="edge-accent" marker-end="url(#arrow-accent)" d="M272,199 L302,199"/>
+        <rect class="box-accent" x="304" y="176" width="110" height="46" rx="8"/>
+        <text x="359" y="204" text-anchor="middle" class="cls-label" style="font-size:12.5px; fill:var(--accent)">Walker</text>
+        <path class="edge-accent" marker-end="url(#arrow-accent)" d="M414,199 L444,199"/>
+        <rect class="box-accent" x="446" y="176" width="110" height="46" rx="8"/>
+        <text x="501" y="204" text-anchor="middle" class="cls-label" style="font-size:12.5px; fill:var(--accent)">Animal</text>
+        <path class="edge" marker-end="url(#arrow)" d="M556,199 L586,199"/>
+        <rect class="box" x="588" y="176" width="90" height="46" rx="8" style="opacity:0.55"/>
+        <text x="633" y="204" text-anchor="middle" class="cls-label" style="font-size:11.5px; opacity:0.7">object</text>
+      </g>
+      <text x="380" y="244" text-anchor="middle" class="step-label" style="fill:var(--accent)">Every class appears exactly once -- Walker is guaranteed to run</text>
+    </svg>
+    <figcaption>Python 2's original algorithm (plain depth-first search) could skip a class entirely in a diamond. Python switched to C3 linearization specifically to guarantee every ancestor is visited exactly once, in an order consistent with how each class declared its own bases.</figcaption>
+  </figure>
+</div>
